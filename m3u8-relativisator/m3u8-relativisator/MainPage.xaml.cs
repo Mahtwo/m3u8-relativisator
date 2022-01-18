@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace m3u8_relativisator
 {
     public partial class MainPage : ContentPage
     {
+        /// <summary>
+        /// Contain all the folders of the path in order
+        /// </summary>
         private string[] paths;
 
         public MainPage()
@@ -22,20 +27,30 @@ namespace m3u8_relativisator
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SelectFile(object sender, EventArgs e)
+        private async void SelectFile(object sender, EventArgs e)
         {
-            //TODO Let user choose a file
+            FileResult fileUri = await SelectM3u8File();
 
-            const string filename = "[filename here]";  //TODO Replace with actual filename
-            button_selectFile.Text = $"\"{filename}\" currently selected";
+            if (fileUri != null)
+            {
+                button_selectFile.Text = $"\"{fileUri.FileName}\" currently selected";
+                label_selectFileError.Text = "";  //Empty the label as it may have been used
 
-            paths = new string[] { "Ex/", "am/", "pl/", "e/", "filenames.ext" };  //TODO Replace with all the possible paths after getting it from the selected file
+                Stream filecontent = await fileUri.OpenReadAsync();
 
-            slider_path.Maximum = paths.Length - 1;  //Minimum is 0
-            slider_path.Value = 0;
-            slider_path.IsEnabled = true;
+                paths = new string[] { "Ex/", "am/", "pl/", "e/", "filenames.ext" };  //TODO Replace with all the possible paths after reading the selected file
 
-            label_sliderPath.Text = GetChoosenPath();
+                slider_path.Maximum = paths.Length - 1;  //Minimum is 0
+                slider_path.Value = 0;
+                slider_path.IsEnabled = true;
+
+                label_sliderPath.Text = GetChoosenPath();
+            } else
+            {
+                //The selected file returned was null
+                button_selectFile.Text = "Select a file";
+                label_selectFileError.Text = "An error occured during the selection of a file";
+            }
         }
 
         /// <summary>
@@ -63,6 +78,26 @@ namespace m3u8_relativisator
             }
 
             return choosenPath;
+        }
+
+        /// <summary>
+        /// Let the user select a m3u(8) file and returns it
+        /// </summary>
+        /// <returns>selected file, or null</returns>
+        private async Task<FileResult> SelectM3u8File()
+        {
+            //Specify selectable files
+            PickOptions options = new PickOptions();
+            options.PickerTitle = "Select a m3u(8) file";
+            FilePickerFileType customFileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+            {
+                { DevicePlatform.Android, new[] {"audio/x-mpegurl"} },  //Android want MIME
+                { DevicePlatform.UWP, new[] {".m3u", ".m3u8"} },  //UWP want extensions
+            });
+            options.FileTypes = customFileType;
+
+            //Ask the user for a m3u(8) file
+            return await FilePicker.PickAsync(options);
         }
     }
 }
