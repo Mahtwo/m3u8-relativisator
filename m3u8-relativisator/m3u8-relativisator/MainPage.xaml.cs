@@ -50,6 +50,10 @@ namespace m3u8_relativisator
                 //The selected file returned was null
                 button_selectFile.Text = "Select a file";
                 label_selectFileError.Text = "An error occured during the selection of a file";
+                label_sliderPath.Text = "";
+                paths = new string[0];
+                slider_path.Value = 0;
+                slider_path.IsEnabled = false;
             }
         }
 
