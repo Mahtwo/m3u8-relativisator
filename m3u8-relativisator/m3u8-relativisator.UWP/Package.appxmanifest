@@ -32,10 +32,10 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="m3u8_relativisator.UWP.App">
       <uap:VisualElements
-        DisplayName="m3u8_relativisator.UWP"
+        DisplayName="m3u8 relativisator"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="m3u8_relativisator.UWP"
+        Description="Change all the paths in a m3u(8) file to relative ones"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square310x310Logo="Assets\LargeTile.png" Square71x71Logo="Assets\SmallTile.png">
           <uap:ShowNameOnTiles>
