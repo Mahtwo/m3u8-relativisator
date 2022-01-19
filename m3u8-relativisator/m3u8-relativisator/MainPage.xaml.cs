@@ -45,6 +45,8 @@ namespace m3u8_relativisator
                 slider_path.IsEnabled = true;
 
                 label_sliderPath.Text = GetChoosenPath();
+
+                button_validate.IsEnabled = true;
             } else
             {
                 //The selected file returned was null
@@ -54,6 +56,7 @@ namespace m3u8_relativisator
                 paths = new string[0];
                 slider_path.Value = 0;
                 slider_path.IsEnabled = false;
+                button_validate.IsEnabled = false;
             }
         }
 
@@ -102,6 +105,28 @@ namespace m3u8_relativisator
 
             //Ask the user for a m3u(8) file
             return await FilePicker.PickAsync(options);
+        }
+
+        /// <summary>
+        /// Quit the program
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Quit(object sender, EventArgs e)
+        {
+            //TODO Close file stream if file opened
+            Environment.Exit(0);
+        }
+
+        /// <summary>
+        /// Apply the choosen path to the selected file
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Validate(object sender, EventArgs e)
+        {
+            //TODO implement this
+            Console.WriteLine("method \"Validate\" called, but not implemented");
         }
     }
 }
