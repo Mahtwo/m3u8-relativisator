@@ -9,7 +9,7 @@
         <StackLayout Orientation="Horizontal" VerticalOptions="Center" HorizontalOptions="Center">
             <Button x:Name="button_selectFile" Text="Select a file" CornerRadius="5" Clicked="SelectFile" FontSize="Medium" HorizontalOptions="Center" VerticalOptions="Center"/>
             <Button x:Name="button_validate" Text="Validate" CornerRadius="5" Clicked="Validate"  FontSize="Medium" HorizontalOptions="Center" VerticalOptions="Center"/>
-            <Button x:Name="button_quit" Text="Quit" CornerRadius="5" Clicked="Quit" FontSize="Medium" HorizontalOptions="Center" VerticalOptions="Center" Margin="20,0"/>
+            <Button x:Name="button_quit" Text="Quit" CornerRadius="5" Clicked="Quit" FontSize="Medium" HorizontalOptions="Center" VerticalOptions="Center" Margin="20,0,0,0"/>
         </StackLayout>
         <Label x:Name="label_selectFileError" HorizontalOptions="Center"/>
     </StackLayout>

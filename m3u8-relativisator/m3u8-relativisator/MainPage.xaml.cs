@@ -53,7 +53,8 @@ namespace m3u8_relativisator
 
                 Stream filecontent = await fileUri.OpenReadAsync();
 
-                paths = new string[] { "Ex/", "am/", "pl/", "e/", "filenames.ext" };  //TODO Replace with all the possible paths after reading the selected file
+                //TODO Replace with all the possible paths after reading the selected file
+                paths = new string[] { "Ex/", "am/", "pl/", "e/", "filenames.ext" };
 
                 slider_path.Maximum = paths.Length - 1;  //Minimum is 0
                 slider_path.Value = 0;
@@ -62,6 +63,22 @@ namespace m3u8_relativisator
                 label_sliderPath.Text = GetChoosenPath();
 
                 button_validate.IsVisible = true;
+                await Task.Delay(1);  //Delay needed so the validate button can be taken into account below
+
+                //Resize the buttons to their normal size
+                button_selectFile.FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label));
+                button_validate.FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label));
+                button_quit.FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label));
+
+                //Decrease text size of buttons until the right of the quit button + 20 (for right margin) is on screen
+                //The given position is relative to the parent, so + 20 is added for the left margin
+                while (20 + button_quit.X + button_quit.Width + 20 > Application.Current.MainPage.Width)
+                {
+                    const double decrementValue = 0.5;
+                    button_selectFile.FontSize -= decrementValue;
+                    button_validate.FontSize -= decrementValue;
+                    button_quit.FontSize -= decrementValue;
+                }
             }
             else
             {
@@ -73,6 +90,11 @@ namespace m3u8_relativisator
                 slider_path.Value = 0;
                 slider_path.IsEnabled = false;
                 button_validate.IsVisible = false;
+
+                //Resize the buttons to their normal size
+                button_selectFile.FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label));
+                button_validate.FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label));
+                button_quit.FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label));
             }
         }
 
@@ -112,11 +134,13 @@ namespace m3u8_relativisator
             //Specify selectable files
             PickOptions options = new PickOptions();
             options.PickerTitle = "Select a m3u(8) file";
-            FilePickerFileType customFileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
-            {
-                { DevicePlatform.Android, new[] {"audio/x-mpegurl"} },  //Android want MIME
-                { DevicePlatform.UWP, new[] {".m3u", ".m3u8"} },  //UWP want extensions
-            });
+            FilePickerFileType customFileType = new FilePickerFileType(
+                new Dictionary<DevicePlatform, IEnumerable<string>>
+                {
+                    { DevicePlatform.Android, new[] {"audio/x-mpegurl"} },  //Android want MIME
+                    { DevicePlatform.UWP, new[] {".m3u", ".m3u8"} },  //UWP want extensions
+                }
+            );
             options.FileTypes = customFileType;
 
             //Ask the user for a m3u(8) file
