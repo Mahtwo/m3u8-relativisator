@@ -5,8 +5,8 @@
 
     <StackLayout VerticalOptions="EndAndExpand" Margin="20">
         <Label x:Name="label_sliderPath"/>
-        <Slider x:Name="slider_path" ThumbColor="#C80096" MinimumTrackColor="#B400F0" MaximumTrackColor="#630084" IsEnabled="false" Margin="0,0,0,20" ValueChanged="ChoosenPathChanged"/>
-        <Button x:Name="button_selectFile" Text="Select a file" CornerRadius="5" Clicked="SelectFile" HorizontalOptions="Center" FontSize="Medium" BackgroundColor="#423347" VerticalOptions="Center"/>
+        <Slider x:Name="slider_path" ThumbColor="#F000B4" MinimumTrackColor="#B400F0" MaximumTrackColor="#7800A0" IsEnabled="false" Margin="0,0,0,20" ValueChanged="ChoosenPathChanged"/>
+        <Button x:Name="button_selectFile" Text="Select a file" CornerRadius="5" Clicked="SelectFile" HorizontalOptions="Center" FontSize="Medium" VerticalOptions="Center"/>
         <Label x:Name="label_selectFileError" HorizontalOptions="Center"/>
     </StackLayout>
 
