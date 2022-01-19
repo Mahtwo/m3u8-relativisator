@@ -20,6 +20,21 @@ namespace m3u8_relativisator
         public MainPage()
         {
             InitializeComponent();
+            WhenLoadingFinished();
+        }
+
+        /// <summary>
+        /// Method waiting for the page to finish loading before executing some code
+        /// </summary>
+        private async void WhenLoadingFinished()
+        {
+            while (button_validate.Width == -1)
+            {
+                await Task.Delay(10);
+            }
+
+            //For some reason, setting IsVisible back to true doesn't work if it's set to false before the window loaded
+            button_validate.IsVisible = false;
         }
 
         /// <summary>
@@ -46,8 +61,9 @@ namespace m3u8_relativisator
 
                 label_sliderPath.Text = GetChoosenPath();
 
-                button_validate.IsEnabled = true;
-            } else
+                button_validate.IsVisible = true;
+            }
+            else
             {
                 //The selected file returned was null
                 button_selectFile.Text = "Select a file";
@@ -56,7 +72,7 @@ namespace m3u8_relativisator
                 paths = new string[0];
                 slider_path.Value = 0;
                 slider_path.IsEnabled = false;
-                button_validate.IsEnabled = false;
+                button_validate.IsVisible = false;
             }
         }
 
