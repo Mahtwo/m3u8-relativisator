@@ -17,6 +17,11 @@ namespace m3u8_relativisator
         /// </summary>
         private string[] paths;
 
+        /// <summary>
+        /// Whether the window finished loading
+        /// </summary>
+        bool finishedLoading = false;
+
         public MainPage()
         {
             InitializeComponent();
@@ -32,6 +37,7 @@ namespace m3u8_relativisator
             {
                 await Task.Delay(10);
             }
+            finishedLoading = true;
 
             //For some reason, setting IsVisible back to true doesn't work if it's set to false before the window loaded
             button_validate.IsVisible = false;
@@ -63,22 +69,6 @@ namespace m3u8_relativisator
                 label_sliderPath.Text = GetChoosenPath();
 
                 button_validate.IsVisible = true;
-                await Task.Delay(1);  //Delay needed so the validate button can be taken into account below
-
-                //Resize the buttons to their normal size
-                button_selectFile.FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label));
-                button_validate.FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label));
-                button_quit.FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label));
-
-                //Decrease text size of buttons until the right of the quit button + 20 (for right margin) is on screen
-                //The given position is relative to the parent, so + 20 is added for the left margin
-                while (20 + button_quit.X + button_quit.Width + 20 > Application.Current.MainPage.Width)
-                {
-                    const double decrementValue = 0.5;
-                    button_selectFile.FontSize -= decrementValue;
-                    button_validate.FontSize -= decrementValue;
-                    button_quit.FontSize -= decrementValue;
-                }
             }
             else
             {
@@ -90,12 +80,9 @@ namespace m3u8_relativisator
                 slider_path.Value = 0;
                 slider_path.IsEnabled = false;
                 button_validate.IsVisible = false;
-
-                //Resize the buttons to their normal size
-                button_selectFile.FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label));
-                button_validate.FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label));
-                button_quit.FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label));
             }
+
+            WindowSizeChanged(null, null);  //Refresh text size of buttons
         }
 
         /// <summary>
@@ -132,8 +119,10 @@ namespace m3u8_relativisator
         private async Task<FileResult> SelectM3u8File()
         {
             //Specify selectable files
-            PickOptions options = new PickOptions();
-            options.PickerTitle = "Select a m3u(8) file";
+            PickOptions options = new PickOptions
+            {
+                PickerTitle = "Select a m3u(8) file"
+            };
             FilePickerFileType customFileType = new FilePickerFileType(
                 new Dictionary<DevicePlatform, IEnumerable<string>>
                 {
@@ -167,6 +156,32 @@ namespace m3u8_relativisator
         {
             //TODO implement this
             Console.WriteLine("method \"Validate\" called, but not implemented");
+        }
+
+        /// <summary>
+        /// Refresh the text size of the buttons to fit them on screen
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void WindowSizeChanged(object sender, EventArgs e)
+        {
+            if (finishedLoading)
+            {
+                //Resize the buttons to their normal size
+                button_selectFile.FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Button));
+                button_validate.FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Button));
+                button_quit.FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Button));
+
+                //Decrease text size of buttons until the right of the quit button + 20 (for right margin) is on screen
+                //The given position is relative to the parent, so + 20 is added for the left margin
+                while (20 + button_quit.X + button_quit.Width + 20 > Application.Current.MainPage.Width)
+                {
+                    const double decrementValue = 0.2;
+                    button_selectFile.FontSize -= decrementValue;
+                    button_validate.FontSize -= decrementValue;
+                    button_quit.FontSize -= decrementValue;
+                }
+            }
         }
     }
 }
