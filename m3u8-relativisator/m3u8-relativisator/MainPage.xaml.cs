@@ -17,6 +17,11 @@ namespace m3u8_relativisator
         public MainPage()
         {
             InitializeComponent();
+
+            double fontSize = (Device.RuntimePlatform == Device.Android) ? 15 : Device.GetNamedSize(NamedSize.Medium, typeof(Button));
+            button_selectFile.FontSize = fontSize;
+            button_validate.FontSize = fontSize;
+            button_quit.FontSize = fontSize;
             WhenLoadingFinished();
         }
 
