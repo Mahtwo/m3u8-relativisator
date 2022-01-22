@@ -46,17 +46,18 @@ namespace m3u8_relativisator
         /// <param name="e"></param>
         private async void SelectFile(object sender, EventArgs e)
         {
-            FileResult fileUri = await SelectM3u8File();
+            FileResult file = await SelectM3u8File();
 
-            if (fileUri != null)
+            if (file != null)
             {
                 button_selectFile.Text = "Reselect a file";
-                label_selectFileError.Text = $"\"{fileUri.FileName}\" currently selected";
+                label_selectFileError.Text = $"\"{file.FileName}\" currently selected";
 
-                Stream filecontent = await fileUri.OpenReadAsync();
-
-                //TODO Replace with all the possible paths after reading the selected file
-                paths = new string[] { "Ex/", "am/", "pl/", "e/", "filenames.ext" };
+                using (Stream filecontent = await file.OpenReadAsync())
+                {
+                    //TODO Replace with all the possible paths after reading the selected file
+                     paths = new string[] { "Ex/", "am/", "pl/", "e/", "filenames.ext" };
+                }
 
                 slider_path.Maximum = paths.Length - 1;  //Minimum is 0
                 slider_path.Value = 0;
@@ -137,7 +138,6 @@ namespace m3u8_relativisator
         /// <param name="e"></param>
         private void Quit(object sender, EventArgs e)
         {
-            //TODO Close file stream if file opened
             Environment.Exit(0);
         }
 
