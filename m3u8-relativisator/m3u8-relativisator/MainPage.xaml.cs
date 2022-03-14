@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -13,6 +14,16 @@ namespace m3u8_relativisator
         /// Contain all the folders of the path in order
         /// </summary>
         private string[] paths;
+
+        /// <summary>
+        /// Contain the path prefix if needed, like "file:/"
+        /// </summary>
+        private string pathPrefix = "";
+
+        /// <summary>
+        /// Contain the original path that will be replaced
+        /// </summary>
+        private string originalPath = "[ORIGINAL PATH]";
 
         public MainPage()
         {
@@ -53,19 +64,179 @@ namespace m3u8_relativisator
                 button_selectFile.Text = "Reselect a file";
                 label_selectFileError.Text = $"\"{file.FileName}\" currently selected";
 
-                using (Stream filecontent = await file.OpenReadAsync())
+                List<string[]> allDifferentPaths = new List<string[]>();
+                //"using" take care of closing the stream when exiting out of the brackets
+                using (Stream fileContent = await file.OpenReadAsync())
                 {
-                    //TODO Replace with all the possible paths after reading the selected file
-                     paths = new string[] { "Ex/", "am/", "pl/", "e/", "filenames.ext" };
+                    using (StreamReader fileContentSr = new StreamReader(fileContent))
+                    {
+                        while (!fileContentSr.EndOfStream)
+                        {
+                            //Trim to remove white-space characters at the start and end
+                            string currentLine = fileContentSr.ReadLine().Trim();
+
+                            //The last part of a path correspond to the file, so isn't needed
+                            int indexLastSlash = -1;
+                            //Check if the current line is a path
+                            int pathType = 0;
+                            if (currentLine[0] == '/')
+                            {
+                                //Absolute Linux path "/..."
+                                pathType = 1;
+
+                                indexLastSlash = currentLine.LastIndexOf('/');
+                            }
+                            else if (currentLine.Contains('/'))
+                            {
+                                //Relative Linux path "<folder>/..."
+                                pathType = 2;
+
+                                indexLastSlash = currentLine.LastIndexOf('/');
+                            }
+                            else if (char.IsLetter(currentLine[0]) && currentLine[1] == ':' && currentLine[2] == '\\')
+                            {
+                                //Absolute Windows path "<letter>:\..."
+                                pathType = 3;
+
+                                indexLastSlash = currentLine.LastIndexOf('\\');
+                            }
+                            else if (currentLine.Contains('\\'))
+                            {
+                                //Relative Windows path "<folder>\..."
+                                pathType = 4;
+
+                                indexLastSlash = currentLine.LastIndexOf('\\');
+                            }
+                            else if (currentLine.Substring(0, Math.Min(6, currentLine.Length)).ToLower() == "file:/")
+                            {
+                                //URI file path "<lowercase>file:/</lowercase>..."
+                                //All possibilities have to be taken into account (https://superuser.com/a/479262)
+                                if (currentLine[6] == '/')
+                                {
+                                    //Three slashes prefix "file://<maybe something>/..."
+                                    pathType = 5;
+                                }
+                                else
+                                {
+                                    //One slash prefix "file:/..."
+                                    pathType = 6;
+                                }
+
+                                indexLastSlash = currentLine.LastIndexOf('/');
+                            }
+                            else
+                            {
+                                //Not a file path, skip back to the start of the while
+                                goto SkipWhileToNextIteration;
+                            }
+
+                            //Separate the path into multiple strings depending on pathType
+                            string[] currentPath = new string[0]; 
+                            switch (pathType)
+                            {
+                                case 1:
+                                case 2:
+                                    currentPath = currentLine.Remove(indexLastSlash).Split('/');
+                                    break;
+                                case 3:
+                                case 4:
+                                    currentPath = currentLine.Remove(indexLastSlash).Split('\\');
+                                    break;
+                                case 5:
+                                    int indexThirdPrefixSlash = currentLine.Substring(7).IndexOf('/');
+
+                                    //Setting the value every time is faster than checking if a value is set
+                                    pathPrefix = currentLine.Substring(0, indexThirdPrefixSlash + 1);
+
+                                    currentPath = currentLine.Substring(indexThirdPrefixSlash, indexLastSlash - indexThirdPrefixSlash).Split('/');
+                                    break;
+                                case 6:
+                                    const int indexPrefixSlash = 5;
+
+                                    //Setting the value every time is faster than checking if a value is set
+                                    pathPrefix = "file:/";
+
+                                    currentPath = currentLine.Substring(indexPrefixSlash, indexLastSlash - indexPrefixSlash).Split('/');
+                                    break;
+                            }
+
+                            //Re-add the slashes as Split don't keep the delimiter
+                            if (pathType == 3 || pathType == 4)
+                            {
+                                //Backward slash
+                                for (int i = 0; i < currentPath.Length; i++)
+                                {
+                                    currentPath[i] += '\\';
+                                }
+                            }
+                            else
+                            {
+                                //Forward slash
+                                for (int i = 0; i < currentPath.Length; i++)
+                                {
+                                    currentPath[i] += '/';
+                                }
+                            }
+
+                            //Check whether currentPath is already in allDifferentPaths
+                            foreach (string[] differentPath in allDifferentPaths)
+                            {
+                                int currentPathLength = currentPath.Length;
+
+                                if (currentPathLength == differentPath.Length)
+                                {
+                                    if (Enumerable.SequenceEqual(currentPath, differentPath))
+                                    {
+                                        //Path already present, skip back to the start of the while
+                                        goto SkipWhileToNextIteration;
+                                    }
+                                }
+                            }
+                            allDifferentPaths.Add(currentPath);
+
+                        SkipWhileToNextIteration:
+                            continue;
+                        }
+                    }
                 }
 
-                slider_path.Maximum = paths.Length - 1;  //Minimum is 0
-                slider_path.Value = 0;
-                slider_path.IsEnabled = true;
+                //TODO Take care of multiple paths in allDifferentPaths
+                //TODO Set originalPath value, which unlike paths also contain the first element
+                List<string> pathToAdd_list = new List<string>();
+                foreach (string[] pathToAdd_array in allDifferentPaths){
 
-                label_sliderPath.Text = GetChoosenPath();
+                    //Skip the first element as it would allow replacing the original path to itself
+                    foreach (string pathToAdd in pathToAdd_array.Skip(1))
+                    {
+                        pathToAdd_list.Add(pathToAdd);
+                    }
+                }
+                pathToAdd_list.Add("");  //Add empty path
+                paths = pathToAdd_list.ToArray();
 
-                button_validate.IsVisible = true;
+                int maximum = paths.Length - 1;
+                if (maximum > 0)
+                {
+                    //Maximum must be greater than 0, Minimum is 0
+                    slider_path.Maximum = maximum;
+                    slider_path.Value = 0;
+                    slider_path.IsEnabled = true;
+
+                    label_sliderPath.Text = GetChoosenPath();
+
+                    button_validate.IsVisible = true;
+                }
+                else
+                {
+                    //The file doesn't contain any modifiable path
+                    slider_path.Value = 0;
+                    slider_path.IsEnabled = false;
+
+                    label_selectFileError.Text += ", but doesn't contain any modifiable path";
+                    label_sliderPath.Text = "";
+
+                    button_validate.IsVisible = false;
+                }
             }
             else
             {
@@ -98,11 +269,12 @@ namespace m3u8_relativisator
         /// <returns>choosen path</returns>
         private string GetChoosenPath()
         {
-            string choosenPath = "";
+            string choosenPath = pathPrefix + originalPath + "... → " + pathPrefix;
             for (int i = Convert.ToInt32(slider_path.Value); i < paths.Length; i++)
             {
                 choosenPath += paths[i];
             }
+            choosenPath += "...";
 
             return choosenPath;
         }
