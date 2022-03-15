@@ -18,12 +18,12 @@ namespace m3u8_relativisator
         /// <summary>
         /// Contain the path prefix if needed, like "file:/"
         /// </summary>
-        private string pathPrefix = "";
+        private string pathPrefix;
 
         /// <summary>
         /// Contain the original path that will be replaced
         /// </summary>
-        private string originalPath = "[ORIGINAL PATH]";
+        private string originalPath;
 
         public MainPage()
         {
@@ -64,6 +64,7 @@ namespace m3u8_relativisator
                 button_selectFile.Text = "Reselect a file";
                 label_selectFileError.Text = $"\"{file.FileName}\" currently selected";
 
+                pathPrefix = "";
                 List<string[]> allDifferentPaths = new List<string[]>();
                 //"using" take care of closing the stream when exiting out of the brackets
                 using (Stream fileContent = await file.OpenReadAsync())
@@ -200,25 +201,53 @@ namespace m3u8_relativisator
                     }
                 }
 
-                //TODO Take care of multiple paths in allDifferentPaths
-                //TODO Set originalPath value, which unlike paths also contain the first element
-                List<string> pathToAdd_list = new List<string>();
-                foreach (string[] pathToAdd_array in allDifferentPaths){
+                List<string> pathsList = new List<string>();
 
-                    //Skip the first element as it would allow replacing the original path to itself
-                    foreach (string pathToAdd in pathToAdd_array.Skip(1))
+                //Get the id of a path in allDifferentPaths with the highest number of folders
+                int idLongestPath = -1;
+                int longestLength = 0;
+                for (int i = 0; i < allDifferentPaths.Count; i++)
+                {
+                    int currentLength = allDifferentPaths[i].Length;
+                    if (currentLength > longestLength)
                     {
-                        pathToAdd_list.Add(pathToAdd);
+                        longestLength = currentLength;
+                        idLongestPath = i;
                     }
                 }
-                pathToAdd_list.Add("");  //Add empty path
-                paths = pathToAdd_list.ToArray();
+
+                //Going left to right, add each folder that is present in every path
+                for (int i = 0; i < longestLength; i++)
+                {
+                    string folderToAdd = allDifferentPaths[idLongestPath][i];
+
+                    //Stop adding folders as soon as one folder isn't in every path
+                    for (int j = 0; j < allDifferentPaths.Count; j++)
+                    {
+                        if (allDifferentPaths[j][i] != folderToAdd)
+                        {
+                            goto StopAddingFolders;
+                        }
+                    }
+
+                    pathsList.Add(folderToAdd);
+                }
+            StopAddingFolders:
+                pathsList.Add("");  //Add empty path
+
+                //Set originalPath value
+                originalPath = "";
+                foreach (string path in pathsList)
+                {
+                    originalPath += path;
+                }
+
+                paths = pathsList.Skip(1).ToArray();  //Skip the first element as it would allow replacing the original path to itself
 
                 int maximum = paths.Length - 1;
                 if (maximum > 0)
                 {
-                    //Maximum must be greater than 0, Minimum is 0
-                    slider_path.Maximum = maximum;
+                    slider_path.Maximum = maximum;  //Maximum must be greater than 0, because Minimum is 0
                     slider_path.Value = 0;
                     slider_path.IsEnabled = true;
 
@@ -241,12 +270,14 @@ namespace m3u8_relativisator
             else
             {
                 //The selected file returned was null
-                button_selectFile.Text = "Select a file";
+                slider_path.Value = 0;
+                slider_path.IsEnabled = false;
+
                 label_selectFileError.Text = "An error occured during the selection of a file";
                 label_sliderPath.Text = "";
                 paths = new string[0];
-                slider_path.Value = 0;
-                slider_path.IsEnabled = false;
+                button_selectFile.Text = "Select a file";
+
                 button_validate.IsVisible = false;
             }
         }
