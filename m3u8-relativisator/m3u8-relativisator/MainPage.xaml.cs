@@ -25,6 +25,11 @@ namespace m3u8_relativisator
         /// </summary>
         private string originalPath;
 
+        /// <summary>
+        /// Currently selected file
+        /// </summary>
+        private FileResult selectedFile;
+
         public MainPage()
         {
             InitializeComponent();
@@ -57,24 +62,24 @@ namespace m3u8_relativisator
         /// <param name="e"></param>
         private async void SelectFile(object sender, EventArgs e)
         {
-            FileResult file = await SelectM3u8File();
+            selectedFile = await SelectM3u8File();
 
-            if (file != null)
+            if (selectedFile != null)
             {
                 button_selectFile.Text = "Reselect a file";
-                label_selectFileError.Text = $"\"{file.FileName}\" currently selected";
+                label_selectFileError.Text = $"\"{selectedFile.FileName}\" currently selected";
 
                 pathPrefix = "";
                 List<string[]> allDifferentPaths = new List<string[]>();
                 //"using" take care of closing the stream when exiting out of the brackets
-                using (Stream fileContent = await file.OpenReadAsync())
+                using (Stream fileStream = await selectedFile.OpenReadAsync())
                 {
-                    using (StreamReader fileContentSr = new StreamReader(fileContent))
+                    using (StreamReader fileStreamR = new StreamReader(fileStream))
                     {
-                        while (!fileContentSr.EndOfStream)
+                        while (!fileStreamR.EndOfStream)
                         {
                             //Trim to remove white-space characters at the start and end
-                            string currentLine = fileContentSr.ReadLine().Trim();
+                            string currentLine = fileStreamR.ReadLine().Trim();
 
                             //The last part of a path correspond to the file, so isn't needed
                             int indexLastSlash = -1;
