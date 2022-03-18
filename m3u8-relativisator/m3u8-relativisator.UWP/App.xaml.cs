@@ -60,7 +60,8 @@ namespace m3u8_relativisator.UWP
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
-                    //TODO: Load state from previously suspended application
+                    //[ORIGINAL TODO: Load state from previously suspended application]
+                    //Nothing to load here, the program save nothing and don't need to refresh the content
                 }
 
                 // Place the frame in the current Window
@@ -98,7 +99,8 @@ namespace m3u8_relativisator.UWP
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: Save application state and stop any background activity
+            //[ORIGINAL TODO: Save application state and stop any background activity]
+            //Nothing to save here, there's no data that must be kept
             deferral.Complete();
         }
     }
