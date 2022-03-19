@@ -303,14 +303,22 @@ namespace m3u8_relativisator
         /// Get the choosen path by using the slider value
         /// </summary>
         /// <returns>choosen path</returns>
-        private string GetChoosenPath()
+        private string GetChoosenPath(bool displayVersion = true)
         {
-            string choosenPath = pathPrefix + originalPath + "... → " + pathPrefix;
+            string choosenPath = pathPrefix;
+
+            if (displayVersion)
+            {
+                choosenPath += originalPath + "... → " + pathPrefix;
+            }
             for (int i = Convert.ToInt32(slider_path.Value); i < paths.Length; i++)
             {
                 choosenPath += paths[i];
             }
-            choosenPath += "...";
+            if (displayVersion)
+            {
+                choosenPath += "...";
+            }
 
             return choosenPath;
         }
