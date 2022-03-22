@@ -354,6 +354,12 @@ namespace m3u8_relativisator
         /// <param name="e"></param>
         private void Quit(object sender, EventArgs e)
         {
+            //Delete all temporary files (delete all files in the cache directory, we don't store anything else)
+            foreach (FileInfo file in new DirectoryInfo(FileSystem.CacheDirectory).EnumerateFiles())
+            {
+                file.Delete();
+            }
+
             Environment.Exit(0);
         }
 
@@ -362,10 +368,82 @@ namespace m3u8_relativisator
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Validate(object sender, EventArgs e)
+        private async void Validate(object sender, EventArgs e)
         {
-            //TODO implement this
-            Console.WriteLine("method \"Validate\" called, but not implemented");
+            //Create a temporary file containing all the original file with the paths modified
+            //Reading all the file into memory would also work but is bad here as we don't know its size
+            string temporaryFilePath = Path.Combine(FileSystem.CacheDirectory,selectedFile.FileName);
+
+            //Get the endline used to keep the same (StreamWriter.WriteLine() use the OS endline)
+            string endline = "";
+            using (Stream fileStream = await selectedFile.OpenReadAsync())
+            {
+                using (StreamReader fileStreamR = new StreamReader(fileStream))
+                {
+                    int currentChar = '\0';
+                    while (currentChar != '\r' && currentChar != '\n')
+                    {
+                        currentChar = fileStreamR.Read();
+                    }
+
+                    if (currentChar == '\r')
+                    {
+                        if (fileStreamR.Read() == '\n')
+                        {
+                            endline = "\r\n";
+                        }
+                        else
+                        {
+                            endline = "\r";
+                        }
+                    } else
+                    {
+                        endline = "\n";
+                    }
+
+                    //Seeking the original file stream back to the start
+                    fileStream.Position = 0;
+                    //https://stackoverflow.com/a/31444226 --> fileStreamR.DiscardBufferedData(); seems not enough
+                    //So we close and create the Stream and StreamReader again instead (disposing the StreamReader disposes the Stream too)
+                }
+            }
+
+            string pathReplaceBy = GetChoosenPath(false);
+
+            //Copy the original file to the temporary file with the paths modified
+            using (Stream fileStream = await selectedFile.OpenReadAsync())
+            {
+                using (StreamReader fileStreamR = new StreamReader(fileStream)) {
+                    using (StreamWriter temporaryFileStreamW = new StreamWriter(temporaryFilePath))
+                    {
+                        while (!fileStreamR.EndOfStream)
+                        {
+                            temporaryFileStreamW.Write(fileStreamR.ReadLine().Replace(originalPath, pathReplaceBy) + endline);
+                        }
+                    }
+                }
+            }
+
+            if (Device.RuntimePlatform == Device.Android)
+            {
+                //Android specific code for saving the file
+                await Share.RequestAsync(new ShareFileRequest
+                {
+                    Title = selectedFile.FileName,
+                    File = new ShareFile(temporaryFilePath)
+                });
+            } 
+            else
+            {
+                //UWP specific code for saving the file
+                await Share.RequestAsync(new ShareFileRequest
+                {
+                    Title = selectedFile.FileName,
+                    File = new ShareFile(temporaryFilePath)
+                });
+            }
+
+            label_selectFileError.Text = temporaryFilePath;
         }
     }
 }
