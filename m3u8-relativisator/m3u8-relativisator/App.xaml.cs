@@ -6,6 +6,13 @@ namespace m3u8_relativisator
 {
     public partial class App : Application
     {
+        public static IPlatformSpecificCode PlatformSpecificCode { get; private set; }
+
+        public static void Init(IPlatformSpecificCode platformSpecificCodeImpl)
+        {
+            App.PlatformSpecificCode = platformSpecificCodeImpl;
+        }
+
         public App()
         {
             InitializeComponent();

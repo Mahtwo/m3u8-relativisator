@@ -424,26 +424,17 @@ namespace m3u8_relativisator
                 }
             }
 
-            if (Device.RuntimePlatform == Device.Android)
+            //TODO When xamarin adds a "SaveAs" method, use it instead after removing IPlatformSpecificCode everywhere
+            string erreur = await App.PlatformSpecificCode.SaveAs(temporaryFilePath, selectedFile.FileName, selectedFile.FullPath);
+            if (erreur != null)
             {
-                //Android specific code for saving the file
-                await Share.RequestAsync(new ShareFileRequest
-                {
-                    Title = selectedFile.FileName,
-                    File = new ShareFile(temporaryFilePath)
-                });
-            } 
-            else
-            {
-                //UWP specific code for saving the file
-                await Share.RequestAsync(new ShareFileRequest
-                {
-                    Title = selectedFile.FileName,
-                    File = new ShareFile(temporaryFilePath)
-                });
+                label_selectFileError.Text = erreur;
             }
-
-            label_selectFileError.Text = temporaryFilePath;
         }
+    }
+
+    public interface IPlatformSpecificCode
+    {
+        Task<string> SaveAs(string temporaryFilePath, string fileName, string originalFilePath);
     }
 }
