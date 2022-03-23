@@ -43,7 +43,7 @@ namespace m3u8_relativisator.UWP
                 //Prevent updates to the remote version of the file until we finish making changes and call CompleteUpdatesAsync.
                 CachedFileManager.DeferUpdates(file);
 
-                //Copy 
+                //Copy the temporary file's contents to the saved file
                 using (Stream fileStreamW = await file.OpenStreamForWriteAsync())
                 {
                     using (Stream temporaryFileStream = new System.IO.FileStream(temporaryFilePath, FileMode.Open))
