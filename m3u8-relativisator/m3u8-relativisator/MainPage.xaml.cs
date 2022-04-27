@@ -427,6 +427,8 @@ namespace m3u8_relativisator
             }
 
             //TODO When xamarin adds a "SaveAs" method, use it instead after removing IPlatformSpecificCode everywhere
+            //UWP-specific code is in m3u8-relativisator.UWP\MainPage.xaml.cs
+            //Android-specific code is in m3u8-relativisator.Android\MainActivity.cs
             string erreur = await App.PlatformSpecificCode.SaveAs(temporaryFilePath, selectedFile.FileName, selectedFile.FullPath);
             if (erreur != null)
             {
