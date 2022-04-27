@@ -1,22 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Provider;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using Xamarin.Essentials;
 
 namespace m3u8_relativisator.UWP
 {
@@ -32,8 +20,8 @@ namespace m3u8_relativisator.UWP
                 SuggestedFileName = fileName
             };
             //Dropdown of file types the user can save the file as
-            savePicker.FileTypeChoices.Add("Playlist file", new List<string>() {".m3u8", ".m3u"});
-            savePicker.FileTypeChoices.Add("All types", new List<string>() {"."});  //A wildcard throws an exception
+            savePicker.FileTypeChoices.Add("Playlist file", new List<string>() { ".m3u8", ".m3u" });
+            savePicker.FileTypeChoices.Add("All types", new List<string>() { "." });  //A wildcard throws an exception
 
             //Open the save file dialog
             StorageFile file = await savePicker.PickSaveFileAsync();

@@ -137,7 +137,7 @@ namespace m3u8_relativisator
                             }
 
                             //Separate the path into multiple strings depending on pathType
-                            string[] currentPath = new string[0]; 
+                            string[] currentPath = new string[0];
                             switch (pathType)
                             {
                                 case 1:
@@ -372,7 +372,7 @@ namespace m3u8_relativisator
         {
             //Create a temporary file containing all the original file with the paths modified
             //Reading all the file into memory would also work but is bad here as we don't know its size
-            string temporaryFilePath = Path.Combine(FileSystem.CacheDirectory,selectedFile.FileName);
+            string temporaryFilePath = Path.Combine(FileSystem.CacheDirectory, selectedFile.FileName);
 
             //Get the endline used to keep the same (StreamWriter.WriteLine() use the OS endline)
             string endline = "";
@@ -396,7 +396,8 @@ namespace m3u8_relativisator
                         {
                             endline = "\r";
                         }
-                    } else
+                    }
+                    else
                     {
                         endline = "\n";
                     }
@@ -413,7 +414,8 @@ namespace m3u8_relativisator
             //Copy the original file to the temporary file with the paths modified
             using (Stream fileStream = await selectedFile.OpenReadAsync())
             {
-                using (StreamReader fileStreamR = new StreamReader(fileStream)) {
+                using (StreamReader fileStreamR = new StreamReader(fileStream))
+                {
                     using (StreamWriter temporaryFileStreamW = new StreamWriter(temporaryFilePath))
                     {
                         while (!fileStreamR.EndOfStream)
