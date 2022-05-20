@@ -449,6 +449,12 @@ namespace m3u8_relativisator
         {
             slider_path.ThumbColor = Color.FromHex("A00078");  //2/3 of the default color
         }
+
+        private void ScreenChanged(object sender, EventArgs e)
+        {
+            label_sliderPath.WidthRequest = ((stackLayout_path.Width * 0.98) - label_pathArrow.Width - label_customPathSuffix.Width) * 0.3;
+            entry_customPath.WidthRequest = (stackLayout_path.Width * 0.98) - label_pathArrow.Width - label_customPathSuffix.Width - label_sliderPath.WidthRequest;
+        }
     }
 
     public interface IPlatformSpecificCode
