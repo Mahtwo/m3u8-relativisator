@@ -302,6 +302,7 @@ namespace m3u8_relativisator
         private void ChoosenPathChanged(object sender, ValueChangedEventArgs e)
         {
             slider_path.Value = Math.Round(slider_path.Value);
+            slider_path.ThumbColor = Color.FromHex("F000B4");  //Restores the default color
 
             entry_customPath.Text = GetChoosenPath();
         }
@@ -433,6 +434,11 @@ namespace m3u8_relativisator
             {
                 label_selectFileError.Text = erreur;
             }
+        }
+
+        private void Entry_customPath_Focused(object sender, FocusEventArgs e)
+        {
+            slider_path.ThumbColor = Color.FromHex("A00078");  //2/3 of the default color
         }
     }
 

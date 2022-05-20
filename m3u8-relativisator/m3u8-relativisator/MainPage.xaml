@@ -6,7 +6,7 @@
     <StackLayout VerticalOptions="EndAndExpand" Margin="20">
         <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
             <Label x:Name="label_sliderPath" VerticalOptions="Center"/>
-            <Entry x:Name="entry_customPath" IsVisible="false" VerticalOptions="Center" HorizontalOptions="FillAndExpand"/>
+            <Entry x:Name="entry_customPath" IsVisible="false" VerticalOptions="Center" HorizontalOptions="FillAndExpand" Focused="Entry_customPath_Focused"/>
             <Label x:Name="label_customPathSuffix" VerticalOptions="Center" Text="..." IsVisible="false"/>
         </StackLayout>
         <Slider x:Name="slider_path" ThumbColor="#F000B4" MinimumTrackColor="#B400F0" MaximumTrackColor="#7800A0" IsEnabled="False"  Margin="0,0,0,20" ValueChanged="ChoosenPathChanged"/>
