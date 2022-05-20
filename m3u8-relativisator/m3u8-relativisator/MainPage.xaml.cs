@@ -256,7 +256,10 @@ namespace m3u8_relativisator
                     slider_path.Value = 0;
                     slider_path.IsEnabled = true;
 
-                    label_sliderPath.Text = GetChoosenPath();
+                    label_sliderPath.Text = pathPrefix + originalPath + "... → ";
+                    entry_customPath.Text = GetChoosenPath();
+                    entry_customPath.IsVisible = true;
+                    label_customPathSuffix.IsVisible = true;
 
                     button_validate.IsVisible = true;
                 }
@@ -268,6 +271,8 @@ namespace m3u8_relativisator
 
                     label_selectFileError.Text += ", but doesn't contain any modifiable path";
                     label_sliderPath.Text = "";
+                    entry_customPath.IsVisible = false;
+                    label_customPathSuffix.IsVisible = false;
 
                     button_validate.IsVisible = false;
                 }
@@ -280,6 +285,8 @@ namespace m3u8_relativisator
 
                 label_selectFileError.Text = "An error occured during the selection of a file";
                 label_sliderPath.Text = "";
+                entry_customPath.IsVisible = false;
+                label_customPathSuffix.IsVisible = false;
                 paths = new string[0];
                 button_selectFile.Text = "Select a file";
 
@@ -296,28 +303,20 @@ namespace m3u8_relativisator
         {
             slider_path.Value = Math.Round(slider_path.Value);
 
-            label_sliderPath.Text = GetChoosenPath();
+            entry_customPath.Text = GetChoosenPath();
         }
 
         /// <summary>
         /// Get the choosen path by using the slider value
         /// </summary>
         /// <returns>choosen path</returns>
-        private string GetChoosenPath(bool displayVersion = true)
+        private string GetChoosenPath()
         {
             string choosenPath = pathPrefix;
 
-            if (displayVersion)
-            {
-                choosenPath += originalPath + "... → " + pathPrefix;
-            }
             for (int i = Convert.ToInt32(slider_path.Value); i < paths.Length; i++)
             {
                 choosenPath += paths[i];
-            }
-            if (displayVersion)
-            {
-                choosenPath += "...";
             }
 
             return choosenPath;
@@ -409,7 +408,7 @@ namespace m3u8_relativisator
                 }
             }
 
-            string pathReplaceBy = GetChoosenPath(false);
+            string pathReplaceBy = entry_customPath.Text;
 
             //Copy the original file to the temporary file with the paths modified
             using (Stream fileStream = await selectedFile.OpenReadAsync())
