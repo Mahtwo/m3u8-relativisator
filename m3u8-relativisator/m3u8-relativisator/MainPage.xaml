@@ -4,7 +4,7 @@
              x:Class="m3u8_relativisator.MainPage">
 
     <StackLayout VerticalOptions="EndAndExpand" Margin="20">
-        <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+        <StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
             <Label x:Name="label_sliderPath" VerticalOptions="Center"/>
             <Entry x:Name="entry_customPath" IsVisible="false" VerticalOptions="Center" HorizontalOptions="FillAndExpand" Focused="Entry_customPath_Focused"/>
             <Label x:Name="label_customPathSuffix" VerticalOptions="Center" Text="..." IsVisible="false"/>
