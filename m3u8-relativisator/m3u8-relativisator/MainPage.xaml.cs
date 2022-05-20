@@ -51,8 +51,14 @@ namespace m3u8_relativisator
                 await Task.Delay(10);
             }
 
-            //For some reason, setting IsVisible back to true doesn't work if it's set to false before the window loaded
+            //For some reason, setting IsVisible back to true for a button doesn't work if it's set to false before the window loaded
             button_validate.IsVisible = false;
+
+            //Use the width of label_customPathSuffix for showing "..." on a single line to initialize the widths of label_sliderPath (30%) and entry_customPath (remaining width), with both relative to 98% of the stackLayout_path.Width
+            label_sliderPath.WidthRequest = ((stackLayout_path.Width * 0.98) - label_pathArrow.Width - label_customPathSuffix.Width) * 0.3;
+            entry_customPath.WidthRequest = (stackLayout_path.Width * 0.98) - label_pathArrow.Width - label_customPathSuffix.Width - label_sliderPath.WidthRequest;
+            label_customPathSuffix.IsVisible = false;
+            label_pathArrow.IsVisible = false;
         }
 
         /// <summary>
@@ -256,7 +262,8 @@ namespace m3u8_relativisator
                     slider_path.Value = 0;
                     slider_path.IsEnabled = true;
 
-                    label_sliderPath.Text = pathPrefix + originalPath + "... → ";
+                    label_sliderPath.Text = pathPrefix + originalPath + "...";
+                    label_pathArrow.IsVisible = true;
                     entry_customPath.Text = GetChoosenPath();
                     entry_customPath.IsVisible = true;
                     label_customPathSuffix.IsVisible = true;
@@ -271,6 +278,7 @@ namespace m3u8_relativisator
 
                     label_selectFileError.Text += ", but doesn't contain any modifiable path";
                     label_sliderPath.Text = "";
+                    label_pathArrow.IsVisible = false;
                     entry_customPath.IsVisible = false;
                     label_customPathSuffix.IsVisible = false;
 
@@ -285,6 +293,7 @@ namespace m3u8_relativisator
 
                 label_selectFileError.Text = "An error occured during the selection of a file";
                 label_sliderPath.Text = "";
+                label_pathArrow.IsVisible = false;
                 entry_customPath.IsVisible = false;
                 label_customPathSuffix.IsVisible = false;
                 paths = new string[0];

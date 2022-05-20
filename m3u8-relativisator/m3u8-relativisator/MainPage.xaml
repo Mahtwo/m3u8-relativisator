@@ -4,10 +4,11 @@
              x:Class="m3u8_relativisator.MainPage">
 
     <StackLayout VerticalOptions="EndAndExpand" Margin="20">
-        <StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
-            <Label x:Name="label_sliderPath" VerticalOptions="Center"/>
+        <StackLayout x:Name="stackLayout_path" Orientation="Horizontal">
+            <Label x:Name="label_sliderPath" VerticalOptions="Center" HorizontalTextAlignment="End"/>
+            <Label x:Name="label_pathArrow" VerticalOptions="Center" Text="→"/>
             <Entry x:Name="entry_customPath" IsVisible="false" VerticalOptions="Center" HorizontalOptions="FillAndExpand" Focused="Entry_customPath_Focused"/>
-            <Label x:Name="label_customPathSuffix" VerticalOptions="Center" Text="..." IsVisible="false"/>
+            <Label x:Name="label_customPathSuffix" VerticalOptions="Center" Text="..."/>
         </StackLayout>
         <Slider x:Name="slider_path" ThumbColor="#F000B4" MinimumTrackColor="#B400F0" MaximumTrackColor="#7800A0" IsEnabled="False"  Margin="0,0,0,20" ValueChanged="ChoosenPathChanged"/>
         <StackLayout Orientation="Horizontal" VerticalOptions="Center" HorizontalOptions="Center">
