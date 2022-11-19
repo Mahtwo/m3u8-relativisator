@@ -21,4 +21,4 @@ Change all the paths in a m3u or m3u8 file to relative ones
 <img src="Resources/Readme/android_sharing-UI.png" alt="Screenshot of the Android version showing the sharing file UI" width="360px"/>
 
 ##	Missing features
--	The Android version of this app is currently missing a "Save As" dialog (Android has one natively but it can't be called within Xamarin as of writing this)
+-	The Android version of this app is currently missing a "Save As" dialog (Android has one natively but it can't be called within Xamarin or MAUI as of writing this)
